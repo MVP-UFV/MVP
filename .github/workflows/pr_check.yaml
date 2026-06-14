@@ -1,0 +1,39 @@
+name: PR Check
+
+on:
+  pull_request:
+
+jobs:
+  pr-check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check PR title
+        run: |
+          if [ -z "${{ github.event.pull_request.title }}" ]; then
+            echo "PR title is required"
+            exit 1
+          fi
+
+      - name: Check PR body exists
+        run: |
+          BODY="${{ github.event.pull_request.body }}"
+
+          if [ -z "$BODY" ]; then
+            echo "PR description is required"
+            exit 1
+          fi
+
+      - name: Check PR template structure
+        run: |
+          BODY="${{ github.event.pull_request.body }}"
+
+          if ! echo "$BODY" | grep -q "## Summary"; then
+            echo "Missing section: Summary"
+            exit 1
+          fi
+
+          if ! echo "$BODY" | grep -q "## Testing"; then
+            echo "Missing section: Testing"
+            exit 1
+          fi
